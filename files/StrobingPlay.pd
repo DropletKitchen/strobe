@@ -1,0 +1,2 @@
+#N canvas 561 23 690 576 10;
+#X obj -23634 -265 StrobingPDExtended;

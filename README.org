@@ -1,0 +1,124 @@
+* Light strobing to improve images from cameras
+
+This page describes a simple circuit for strobing an LED or laser diode
+along with control software.
+
+
+This is a [[https://DropletKitchen.github.io][DropletKitchen]] project. Original source code of the project
+is provided under MIT License. The source may contain code under a
+different license, if this is the case it is stated in the LICENSE
+file.
+
+If not stated otherwise, the designs and documentation in this repository
+is Copyright (c) 2016 Martin Fischlechner and DropletKitchen Contributors,
+and made available under a
+[[https://creativecommons.org/licenses/by/4.0/][Creative Commons Attribution 4.0 International (CC BY 4.0)]] License.
+
+** Introduction
+When imaging high-speed events, one has to minimise the exposure time
+of the camera to avoid blurred images. Depending on the camera model,
+this is often only possible to a certain extent. The most
+straightforward way to further reduce exposure time is to strobe the
+lightsource instead. Here, a simple circuit is shown that allows an
+Arduino-compatible microcontroller (here a Teensy 3.2) to strobe LEDs
+and laser diodes. A software frontend based on Pure Data (PD) is
+provided to facilitate control. You will need a 'global shutter'
+camera, which, in contrast to 'rolling shutter' cameras, expose and
+read out all lines of the imaging sensor at the same time.
+
+This circuit has been published by Wilson et al. ("Performance
+evaluation of an overdriven LED for high-speed schlieren imaging"
+S. Wilson, G. Gustafson, D. Lincoln, K. Murari, C. Johansen; J Vis
+(2015) 18:35–45, [[HTTP:doi.org/10.1007/s12650-014-0220-7][DOI 10.1007/s12650-014-0220-7]]). In a nutshell, it
+uses two big capacitors to deliver a lot of current to the lightsource
+in a quick manner. Switching is achieved by a Power MOSFET controlled
+by a high-speed MOSFET driver. A Schottky diode protects the circuit.
+
+** Components
+
+| Schematics Code | Item                                                       | number | bought from                |   part number | approx cost (£) |
+|-----------------+------------------------------------------------------------+--------+----------------------------+---------------+-----------------|
+| C1              | PANASONIC EEUFR1H681L Electrolytic Capacitor, 680 µF, 50 V |      2 | Farnell                    |       1800687 |             0.7 |
+| D1              | INFINEON  IDH06G65C5  SCHOTTKY DIODE, 6A                   |      1 | Farnell                    |       2443365 |            3.80 |
+| LED             | eg  OPULENT  REBEL-STAR-ES-NW200  High Brightness LED      |      1 | Farnell                    |       2110405 |               4 |
+|                 | AVX  SR301E105MAR  Ceramic Capacitor, 1 µF, 100 V          |      2 | Farnell                    |       2332992 |            2.40 |
+| M1              | MOSFET IRFB3206PBF                                         |      1 | Farnell                    |       1436949 |            3.20 |
+| U1              | TEXAS INSTRUMENTS  UCC37322P MOSFET Driver                 |      1 | Farnell                    |       8463034 |            3.30 |
+|                 | DIL socket                                                 |      1 | Farnell                    |       2445620 |            0.07 |
+|                 | Teensy 3.2 microcontroller or other Arduino compatible     |      1 | CPC-farnell                |       SC13539 |             ~20 |
+|                 | Stripboard, PCB headers male/female, wires                 |        |                            |               |              NA |
+|                 | adjustable Lab Power Supply (easiest to use)               |        |                            |               |              NA |
+|-----------------+------------------------------------------------------------+--------+----------------------------+---------------+-----------------|
+| Cameras tested  | must be global-shutter                                     |        |                            |               |                 |
+|-----------------+------------------------------------------------------------+--------+----------------------------+---------------+-----------------|
+|                 | Phantom Miro EX2 High-speed camera                         |        | Vision Research            |               |         ~ 10000 |
+|                 | Firefly MV USB2.0 Camera                                   |        | Point Grey                 | FMVU-03MTM-CS |            ~200 |
+|                 | Emax SONY 811 700TVL 1/3-Inch CCD Video Camera             |        | www.unmannedtechshop.co.uk |   CC7-E5A-55E |              19 |
+|-----------------+------------------------------------------------------------+--------+----------------------------+---------------+-----------------|
+
+
+** Circuit
+The circuit can be assembled in a straightforward manner with
+stripboard (see schematics and image below). Please also use the
+component datasheets for sample circuits and wiring instructions. The
+shorter the pulse, the higher voltage an LED or laser diode can
+digest. It is therefore convenient to drive the circuit with an
+adjustable lab power supply. It is a good idea to buy more than one
+LED when exploring the circuit.
+
+
+#+CAPTION: Schematics of the circuit
+[[file: images/StrobeCircuitDiagram.jpeg]]
+
+
+
+
+#+CAPTION: Image of the circuit with a teensy microcontroller connected.
+[[file: images/StrobeCircuit.jpeg]]
+
+** Programming the microcontroller (Teensy 3.2)
+You can find the program here ([[./files/strobing.ino]]). It uses the OSC
+protocol to get its values from a software frontend made in Pure Data
+(PD). Have a look at the code, it contains a fair amount on
+documentation and can be changed quite easily. In a nutshell, it
+retrieves 'delaytimes' (in microseconds) from the frontend, and uses
+an interrupt to pulse the light in desired intervals. As is, simple
+'delayMicroseconds' is used to switch the lightsource on for a given
+length of time, therefore minimum exposure time is limited to one
+microsecond.  For smaller exposure times you can use a signal
+generator or play with 'random instructions', eg a little for-loop in
+the interrupt instead of 'delayMicroseconds'.
+
+** Software frontend with Pure Data (PD)
+To avoid reprogramming the microcontroller to adjust settings, a
+simple PD-program is used to control strobing. The version provided
+here uses PD's 'Graph on Parent' feature to allow for a clean
+interface and is written to use with PD-extended
+(https://puredata.info/downloads/pd-extended) or PD-L2ORK
+(http://l2ork.music.vt.edu/main/make-your-own-l2ork/software/).
+Download [[./files/o.io.slipserial.pd]] (a little helper for OSC
+communication), [[./files/StrobingPDExtended.pd]] (the program itself
+where you can make changes) and [[./files/StrobingPlay.pd]] (the
+simplified frontend) into the same folder. 'StrobingPlay' is
+configured to quickly adjust the length and number of exposures per
+image frame at a given framerate. This might not be convenient for
+every experimental setup but can be adapted towards other needs in a
+straightforward fashion.
+
+#+CAPTION: Screenshot of the PD-frontend 'StrobingPlay'.
+[[file: images/ScreenShotPDStrobing.png]]
+
+** Why do you want to use strobing?
+Strobing light is the easiest way to enhance imaging of fast events -
+and allows you to use relatively cheap cameras for microfluidic
+rigs. If you expose one frame multiple times, a single image will
+contain movement in time, useful for example to calculate velocities
+of beads or droplets in a microfluidic channel.
+
+
+#+CAPTION: Droplet generator producing sample at 30kHz at a velocity of 700mm/s, imaged with a FireflyMV camera (Point Grey) at 200fps with its minimum exposure time of 30 microseconds. Top: without strobing. Bottom: Strobed once every frame for 1 microsecond.
+[[file: images/StrobingFireflyMV.jpeg]]
+
+
+#+CAPTION: Droplet generator producing sample at 30kHz at a velocity of 700mm/s, imaged with an inexpensive Sony CCD board camera at 25fps (PAL). Top: without strobing, LED adjusted to maximum light intensity for the camera (regulates the exposure time of the camera down to 10 microseconds automatically). Bottom: With the LED strobed every 10 microseconds for a duration of 1 microsecond. Due to the minimum exposure time of the camera being 10 microseconds already, image improvement by strobing is smaller than with the FireflyMV. Images have been deinterlaced with a small helper program in PD ([[./files/DeinterlaceWithSave.pd]]).
+[[file: images/StrobingSonyCCD.jpeg]]

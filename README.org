@@ -69,13 +69,16 @@ LED when exploring the circuit.
 
 #+CAPTION: Schematics of the circuit
 [[file: images/StrobeCircuitDiagram.jpeg]]
-
+#+BEGIN_QUOTE
+/Schematics of the circuit/
+#+END_QUOTE
 
 
 
 #+CAPTION: Image of the circuit with a teensy microcontroller connected.
-[[file: images/StrobeCircuit.jpeg]]
 
+| [[file: images/StrobeCircuit.jpeg]]                               |
+| /Image of the circuit with a teensy microcontroller connected./ |
 ** Programming the microcontroller (Teensy 3.2)
 You can find the program here ([[./files/strobing.ino]]). It uses the OSC
 protocol to get its values from a software frontend made in Pure Data
@@ -105,8 +108,13 @@ image frame at a given framerate. This might not be convenient for
 every experimental setup but can be adapted towards other needs in a
 straightforward fashion.
 
+
+
 #+CAPTION: Screenshot of the PD-frontend 'StrobingPlay'.
 [[file: images/ScreenShotPDStrobing.png]]
+: Screenshot of the PD-frontend 'StrobingPlay'.
+
+
 
 ** Why do you want to use strobing?
 Strobing light is the easiest way to enhance imaging of fast events -
@@ -118,7 +126,13 @@ of beads or droplets in a microfluidic channel.
 
 #+CAPTION: Droplet generator producing sample at 30kHz at a velocity of 700mm/s, imaged with a FireflyMV camera (Point Grey) at 200fps with its minimum exposure time of 30 microseconds. Top: without strobing. Bottom: Strobed once every frame for 1 microsecond.
 [[file: images/StrobingFireflyMV.jpeg]]
+#+BEGIN_QUOTE
+/Droplet generator producing sample at 30kHz at a velocity of 700mm/s, imaged with a FireflyMV camera (Point Grey) at 200fps with its minimum exposure time of 30 microseconds. Top: without strobing. Bottom: Strobed once every frame for 1 microsecond./
+#+END_QUOTE
 
 
 #+CAPTION: Droplet generator producing sample at 30kHz at a velocity of 700mm/s, imaged with an inexpensive Sony CCD board camera at 25fps (PAL). Top: without strobing, LED adjusted to maximum light intensity for the camera (regulates the exposure time of the camera down to 10 microseconds automatically). Bottom: With the LED strobed every 10 microseconds for a duration of 1 microsecond. Due to the minimum exposure time of the camera being 10 microseconds already, image improvement by strobing is smaller than with the FireflyMV. Images have been deinterlaced with a small helper program in PD ([[./files/DeinterlaceWithSave.pd]]).
-[[file: images/StrobingSonyCCD.jpeg]]
+ [[file: images/StrobingSonyCCD.jpeg]]
+#+BEGIN_QUOTE
+ Droplet generator producing sample at 30kHz at a velocity of 700mm/s, imaged with an inexpensive Sony CCD board camera at 25fps (PAL). Top: without strobing, LED adjusted to maximum light intensity for the camera (regulates the exposure time of the camera down to 10 microseconds automatically). Bottom: With the LED strobed every 10 microseconds for a duration of 1 microsecond. Due to the minimum exposure time of the camera being 10 microseconds already, image improvement by strobing is smaller than with the FireflyMV. Images have been deinterlaced with a small helper program in PD ([[./files/DeinterlaceWithSave.pd]]).
+#+END_QUOTE
